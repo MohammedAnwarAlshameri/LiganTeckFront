@@ -1,6 +1,7 @@
 export const environment = {
   production: true,
-  defaultauth: 'fakebackend',
+  defaultauth: 'jwt',
+  apiBaseUrl: 'https://YOUR-PROD-DOMAIN/api', 
   firebaseConfig: {
     apiKey: '',
     authDomain: '',

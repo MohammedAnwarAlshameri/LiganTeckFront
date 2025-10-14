@@ -114,7 +114,7 @@ if (environment.defaultauth === 'firebase') {
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
     { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true },
-    { provide: HTTP_INTERCEPTORS, useClass: fakebackendInterceptor, multi: true },
+    /*{ provide: HTTP_INTERCEPTORS, useClass: fakebackendInterceptor, multi: true },*/
   ],
   bootstrap: [AppComponent]
 })
