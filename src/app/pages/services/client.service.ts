@@ -19,7 +19,7 @@ export class ClientService {
     if (q) params = params.set('q', q);
 
     return this.http
-      .get<PagedResult<ClientApiItem>>(`${this.base}/api/admin/tenants/search`, { params })
+      .get<PagedResult<ClientApiItem>>(`${this.base}/admin/tenants/search`, { params })
       .pipe(map(res => ({
         page: res.page,
         pageSize: res.pageSize,
@@ -30,7 +30,7 @@ export class ClientService {
 
   /** حذف (سوفت ديليت) - إن كان لديك Endpoint */
   delete(id: number) {
-    return this.http.delete(`${this.base}/api/admin/tenants/${id}`);
+    return this.http.delete(`${this.base}/admin/tenants/${id}`);
   }
 
   // تحويل عنصر API إلى صيغة الجدول الحالية

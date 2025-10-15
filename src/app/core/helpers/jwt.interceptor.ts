@@ -46,3 +46,16 @@ export class JwtInterceptor implements HttpInterceptor {
         return next.handle(request);
     }
 }
+
+//قراءة التوكن الحقيقي فقط
+/*export class JwtInterceptor implements HttpInterceptor {
+  constructor(private auth: AuthenticationService) {}
+
+  intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+    const user = this.auth.currentUser(); // يجب أن يعيد { token: string } عند تسجيل الدخول
+    if (user?.token) {
+      req = req.clone({ setHeaders: { Authorization: `Bearer ${user.token}` } });
+    }
+    return next.handle(req);
+  }
+}*/
