@@ -1,67 +1,79 @@
 import { Component } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { Store } from '@ngrx/store';
-
-// Register Auth
 import { AuthenticationService } from 'src/app/core/services/auth.service';
-import { UserProfileService } from 'src/app/core/services/user.service';
-import { Register } from 'src/app/store/Authentication/authentication.actions';
-
 
 @Component({
   selector: 'app-register',
   templateUrl: './register.component.html',
   styleUrls: ['./register.component.scss']
 })
-
-// Register Component
 export class RegisterComponent {
-  // Login Form
   signupForm!: UntypedFormGroup;
   submitted = false;
-  successmsg = false;
+  loading = false;
   error = '';
-  // set the current year
+  fieldTextType = false;
+
+  // السنة الحالية للواجهة
   year: number = new Date().getFullYear();
 
-  fieldTextType!: boolean;
-
-  constructor(private formBuilder: UntypedFormBuilder,  public store: Store) { }
+  constructor(
+    private formBuilder: UntypedFormBuilder,
+    private router: Router,
+    private auth: AuthenticationService
+  ) {}
 
   ngOnInit(): void {
-    /**
-     * Form Validatyion
-     */
+    // لو المستخدم مسجّل دخول، وجّهه مباشرة
+    if (this.auth.isAuthenticated) {
+      this.router.navigateByUrl('/');
+      return;
+    }
+
+    // بناء النموذج
     this.signupForm = this.formBuilder.group({
       email: ['', [Validators.required, Validators.email]],
-      name: ['', [Validators.required]],
-      password: ['', Validators.required],
+      name: ['', [Validators.required]],         // سنمرّرها كـ tenantName
+      password: ['', [Validators.required]],     // عندك pattern في الـ HTML بالفعل
     });
   }
 
-  // convenience getter for easy access to form fields
+  // Getter مختصر
   get f() { return this.signupForm.controls; }
 
   /**
-   * Register submit form
+   * Submit
    */
   onSubmit() {
     this.submitted = true;
+    this.error = '';
+
+    if (this.signupForm.invalid) return;
 
     const email = this.f['email'].value;
-    const name = this.f['name'].value;
+    const tenantName = this.f['name'].value;
     const password = this.f['password'].value;
 
-    //Dispatch Action
-    this.store.dispatch(Register({ email: email, first_name: name, password: password }));
+    this.loading = true;
+
+    this.auth.register({ tenantName, email, password }).subscribe({
+      next: _ => {
+        this.loading = false;
+        // التوكن محفوظ داخل الخدمة؛ نوجّه المستخدم
+        this.router.navigateByUrl('/');
+      },
+      error: err => {
+        this.loading = false;
+        this.error = err?.error?.message || err?.message || 'Registration failed';
+      }
+    });
   }
 
   /**
- * Password Hide/Show
- */
+   * إظهار/إخفاء كلمة المرور
+   */
   toggleFieldTextType() {
     this.fieldTextType = !this.fieldTextType;
   }
-
 }

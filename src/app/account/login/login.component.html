@@ -132,6 +132,12 @@
                                                 </div>
                                             </div>
                                         </form>
+                                        <!-- داخل نفس الـ card-body حيث يوجد الـ form -->
+                                        @if (error) {
+                                            <div class="alert alert-danger mt-3">
+                                                {{ error }}
+                                            </div>
+                                        }
 
                                         <div class="text-center mt-5">
                                             <p class="mb-0">Don't have an account ? <a routerLink="/auth/register" class="fw-semibold text-secondary text-decoration-underline"> SignUp</a> </p>
