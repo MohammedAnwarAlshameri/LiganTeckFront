@@ -8,7 +8,7 @@ import { ClientApiItem, ClientRow, PagedResult } from 'src/app/pages/apps/client
 @Injectable({ providedIn: 'root' })
 export class ClientService {
   private http = inject(HttpClient);
-  private base = environment.apiBaseUrl; // مثال: http://localhost:7066
+  private base = environment.apiBaseUrl; // مثال: http://localhost:7066/api
 
   /**
    * استرجاع العملاء مع بحث وتقسيم صفحات من API:
