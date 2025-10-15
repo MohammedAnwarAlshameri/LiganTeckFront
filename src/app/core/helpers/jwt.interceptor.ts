@@ -48,7 +48,12 @@ export class JwtInterceptor implements HttpInterceptor {
 }
 
 //قراءة التوكن الحقيقي فقط
+<<<<<<< Updated upstream
 /*export class JwtInterceptor implements HttpInterceptor {
+=======
+/*@Injectable()
+export class JwtInterceptor implements HttpInterceptor {
+>>>>>>> Stashed changes
   constructor(private auth: AuthenticationService) {}
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
