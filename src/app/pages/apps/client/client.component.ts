@@ -1,7 +1,6 @@
 // src/app/pages/apps/client/client.component.ts
 import { DecimalPipe } from '@angular/common';
-import { Component, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
-import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { ModalDirective } from 'ngx-bootstrap/modal';
 import { PageChangedEvent } from 'ngx-bootstrap/pagination';
 import Swal from 'sweetalert2';
@@ -31,34 +30,20 @@ export class ClientComponent implements OnInit {
   masterSelected = false;
   checkedValGet: number[] = [];
 
-  // نموذج إضافة/تعديل (مستقبلاً)
+  // متغيرات الحذف
   submitted = false;
-  clientForm!: UntypedFormGroup;
   trackById(index: number, item: ClientRow) { return item.id; }
 
 
-  @ViewChild('showModal',  { static: false }) showModal?: ModalDirective;
-  @ViewChild('deleteModal', { static: false }) deleteModal?: ModalDirective;
+  @ViewChild('deleteModal', { static: false }) deleteModal?: any;
 
   constructor(
     public service: ClientService,
-    private fb: UntypedFormBuilder,
     private pipe: DecimalPipe
   ) {}
 
   ngOnInit(): void {
     this.breadCrumbItems = [{ label: 'Tables' }, { label: 'Clients', active: true }];
-
-    this.clientForm = this.fb.group({
-      ids: [''],
-      customer_name: ['', [Validators.required]],
-      username: ['', [Validators.required]],
-      email: ['', [Validators.required]],
-      phone: ['', [Validators.required]],
-      date: [''],
-      status: ['']
-    });
-
     this.load();
   }
 
@@ -71,9 +56,18 @@ export class ClientComponent implements OnInit {
         this.masterSelected = false;
         this.checkedValGet = [];
       },
-      error: _ => {
+      error: err => {
+        console.error('Error loading clients:', err);
         this.clientsData = [];
         this.total = 0;
+        
+        // عرض رسالة خطأ للمستخدم
+        Swal.fire({
+          title: 'خطأ في تحميل البيانات',
+          text: 'حدث خطأ أثناء تحميل بيانات العملاء. يرجى المحاولة مرة أخرى.',
+          icon: 'error',
+          confirmButtonColor: 'rgb(3,142,220)'
+        });
       },
       complete: () => this.loading = false
     });
@@ -109,12 +103,34 @@ export class ClientComponent implements OnInit {
     return this.clientsData.every(x => !!x.state);
   }
 
-  // فتح نافذة حذف متعدد / مفرد
+  // فتح نافذة حذف متعدد
   deleteRecord() {
     if (this.checkedValGet.length > 0) {
-      this.deleteModal?.show();
+      this.showDeleteModal();
     } else {
-      Swal.fire({ text: 'Please select at least one checkbox', confirmButtonColor: 'rgb(3,142,220)' });
+      Swal.fire({ 
+        text: 'يرجى تحديد عميل واحد على الأقل للحذف', 
+        icon: 'warning',
+        confirmButtonColor: 'rgb(3,142,220)' 
+      });
+    }
+  }
+
+  // إظهار مودال الحذف
+  showDeleteModal() {
+    if (this.deleteModal) {
+      this.deleteModal.nativeElement.classList.add('show');
+      this.deleteModal.nativeElement.style.display = 'block';
+      document.body.classList.add('modal-open');
+    }
+  }
+
+  // إغلاق مودال الحذف
+  closeDeleteModal() {
+    if (this.deleteModal) {
+      this.deleteModal.nativeElement.classList.remove('show');
+      this.deleteModal.nativeElement.style.display = 'none';
+      document.body.classList.remove('modal-open');
     }
   }
 
@@ -122,78 +138,49 @@ export class ClientComponent implements OnInit {
   deleteId?: number;
   confirm(id: number) {
     this.deleteId = id;
-    this.deleteModal?.show();
+    this.checkedValGet = [id]; // تعيين العميل المحدد للحذف
+    this.showDeleteModal();
   }
 
-  // تنفيذ الحذف (استدعاء API إن متاح، وإلا حذف من الواجهة مؤقتًا)
-  deleteData(id?: number) {
-    const ids = id ? [id] : this.checkedValGet;
-
-    // إذا لديك Endpoint للحذف الجماعي غيّر هذه الجزئية:
-    ids.forEach(x => {
-      const idx = this.clientsData.findIndex(c => c.id === x);
-      if (idx >= 0) this.clientsData.splice(idx, 1);
-    });
-
-    this.checkedValGet = [];
-    this.masterSelected = false;
-    this.deleteModal?.hide();
-    Swal.fire({ text: 'Deleted successfully', icon: 'success', confirmButtonColor: 'rgb(3,142,220)' });
-  }
-
-  // فتح نافذة تعديل (مودال)
-  editModal(index: number) {
-    this.submitted = false;
-    const updateBtn = document.getElementById('add-btn') as HTMLAreaElement;
-    if (updateBtn) updateBtn.innerHTML = 'Update';
-    this.showModal?.show();
-
-    const listData = this.clientsData[index];
-    this.clientForm.patchValue({
-      ids: listData.id,
-      customer_name: listData.customer_name,
-      username: listData.username,
-      email: listData.email,
-      phone: listData.phone,
-      date: listData.date,
-      status: listData.status
-    });
-  }
-
-  // حفظ (واجهة فقط حالياً)
-  saveClient() {
-    if (!this.clientForm.valid) { this.submitted = true; return; }
-
-    const idVal = this.clientForm.get('ids')?.value;
-    if (idVal) {
-      // تحديث على الواجهة
-      this.clientsData = this.clientsData.map(d => d.id === idVal ? {
-        ...d,
-        customer_name: this.clientForm.get('customer_name')?.value,
-        username: this.clientForm.get('username')?.value,
-        email: this.clientForm.get('email')?.value,
-        phone: this.clientForm.get('phone')?.value,
-        date: this.clientForm.get('date')?.value,
-        status: this.clientForm.get('status')?.value
-      } : d);
-    } else {
-      // إضافة (واجهة فقط) - يمكنك ربط API لاحقًا
-      const newItem: ClientRow = {
-        id: Math.max(0, ...this.clientsData.map(x => x.id)) + 1,
-        customer_name: this.clientForm.get('customer_name')?.value,
-        username: this.clientForm.get('username')?.value,
-        email: this.clientForm.get('email')?.value,
-        phone: this.clientForm.get('phone')?.value,
-        date: this.clientForm.get('date')?.value || '',
-        status: this.clientForm.get('status')?.value || 'Active',
-        status_color: 'success',
-        state: false
-      };
-      this.clientsData = [newItem, ...this.clientsData];
+  // تنفيذ الحذف مع API
+  deleteData() {
+    const ids = this.checkedValGet;
+    
+    if (ids.length === 0) {
+      this.closeDeleteModal();
+      return;
     }
 
-    this.showModal?.hide();
-    setTimeout(() => this.clientForm.reset(), 200);
-    this.submitted = true;
+    // حذف من API
+    const deletePromises = ids.map(clientId => 
+      this.service.delete(clientId).toPromise()
+    );
+
+    Promise.all(deletePromises).then(() => {
+      // إعادة تحميل البيانات بعد الحذف
+      this.load();
+      this.checkedValGet = [];
+      this.masterSelected = false;
+      this.deleteId = undefined;
+      this.closeDeleteModal();
+      
+      const message = ids.length === 1 ? 'تم حذف العميل بنجاح' : `تم حذف ${ids.length} عملاء بنجاح`;
+      Swal.fire({ 
+        text: message, 
+        icon: 'success', 
+        confirmButtonColor: 'rgb(3,142,220)' 
+      });
+    }).catch(error => {
+      console.error('Error deleting clients:', error);
+      this.closeDeleteModal();
+      
+      Swal.fire({ 
+        title: 'خطأ في الحذف',
+        text: 'حدث خطأ أثناء حذف العملاء. يرجى المحاولة مرة أخرى.',
+        icon: 'error', 
+        confirmButtonColor: 'rgb(3,142,220)' 
+      });
+    });
   }
+
 }

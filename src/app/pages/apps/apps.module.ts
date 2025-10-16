@@ -52,6 +52,7 @@ import { FlatpickrModule } from 'angularx-flatpickr';
 // Component
 
 import { ClientComponent } from './client/client.component';
+import { SubscriptionComponent } from './subscription/subscription.component';
 
 const DEFAULT_DROPZONE_CONFIG: DropzoneConfigInterface = {
   // Change this to your upload POST address:
@@ -64,6 +65,7 @@ const DEFAULT_DROPZONE_CONFIG: DropzoneConfigInterface = {
 @NgModule({
   declarations: [
    ClientComponent,
+   SubscriptionComponent,
   ],
   imports: [
     CommonModule,

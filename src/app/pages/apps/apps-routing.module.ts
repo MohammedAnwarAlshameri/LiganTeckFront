@@ -3,11 +3,16 @@ import { RouterModule, Routes } from '@angular/router';
 
 // Component
 import{ClientComponent} from './client/client.component';
+import{SubscriptionComponent} from './subscription/subscription.component';
 
 const routes: Routes = [
     {
         path: "client",
         component: ClientComponent
+    },
+    {
+        path: "subscription",
+        component: SubscriptionComponent
     },
    
 ];
