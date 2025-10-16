@@ -9,6 +9,19 @@
 /* Importing Select SCSS file. */
 @import "~@ng-select/ng-select/themes/default.theme.css";
 
+:root {
+  --bg: #f6fbfa;
+  --surface: #ffffff;
+  --muted: #5c6b68;
+  --text: #0f2b28;
+  --border: #e3efed;
+  --shadow: 0 8px 28px rgba(15, 43, 40, 0.08);
+  --accent: #0f8f8a;
+  --accent-2: #0aa3a3;
+  --accent-3: #59c7c2;
+  --danger: #e44d4d;
+  --ring: rgba(15, 143, 138, 0.25);
+}
 
 .emoji-mart {
   position: absolute;

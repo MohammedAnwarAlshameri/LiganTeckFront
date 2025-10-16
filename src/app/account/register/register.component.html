@@ -1,155 +1,261 @@
-<section class="auth-page-wrapper py-5 position-relative d-flex align-items-center justify-content-center min-vh-100">
-    <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-lg-11">
-                <div class="card mb-0">
-                    <div class="row g-0 align-items-center">
-                        <div class="col-xxl-5">
-                            <div class="card auth-card bg-secondary h-100 border-0 shadow-none d-none d-sm-block mb-0">
-                                <div class="card-body py-5 d-flex justify-content-between flex-column h-100">
-                                    <div class="text-center">
-                                        <h3 class="text-white">Start your journey with us.</h3>
-                                        <p class="text-white opacity-75 fs-base">It brings together your tasks, projects, timelines, files and more</p>
-                                    </div>
+<!-- Language / Locale switcher -->
+<header class="langbar" aria-label="language switcher">
+  <div class="lang-switch" (click)="toggleLanguageMenu()" [attr.aria-expanded]="isLanguageMenuOpen">
+    <div class="globe" aria-hidden="true">🌐</div>
+    <span>{{ currentLanguage === 'ar' ? 'Ar' : 'En' }}</span>
+    <span class="caret">▾</span>
+  </div>
+  <div class="lang-menu" [hidden]="!isLanguageMenuOpen" role="menu">
+    <button (click)="changeLanguage('ar')" role="menuitem">Arabic</button>
+    <button (click)="changeLanguage('en')" role="menuitem">English</button>
+  </div>
+</header>
 
-                                    <div class="auth-effect-main my-5 position-relative rounded-circle d-flex align-items-center justify-content-center mx-auto">
-                                        <div class="effect-circle-1 position-relative mx-auto rounded-circle d-flex align-items-center justify-content-center">
-                                            <div class="effect-circle-2 position-relative mx-auto rounded-circle d-flex align-items-center justify-content-center">
-                                                <div class="effect-circle-3 mx-auto rounded-circle position-relative text-white fs-4xl d-flex align-items-center justify-content-center">
-                                                    Welcome to <span class="text-primary ms-1">Steex</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <ul class="auth-user-list list-unstyled">
-                                            <li>
-                                                <div class="avatar-sm d-inline-block">
-                                                    <div class="avatar-title bg-white shadow-lg overflow-hidden rounded-circle">
-                                                        <img src="assets/images/users/avatar-1.jpg" alt="" class="img-fluid">
-                                                    </div>
-                                                </div>
-                                            </li>
-                                            <li>
-                                                <div class="avatar-sm d-inline-block">
-                                                    <div class="avatar-title bg-white shadow-lg overflow-hidden rounded-circle">
-                                                        <img src="assets/images/users/48/avatar-2.jpg" alt="" class="img-fluid">
-                                                    </div>
-                                                </div>
-                                            </li>
-                                            <li>
-                                                <div class="avatar-sm d-inline-block">
-                                                    <div class="avatar-title bg-white shadow-lg overflow-hidden rounded-circle">
-                                                        <img src="assets/images/users/avatar-3.jpg" alt="" class="img-fluid">
-                                                    </div>
-                                                </div>
-                                            </li>
-                                            <li>
-                                                <div class="avatar-sm d-inline-block">
-                                                    <div class="avatar-title bg-white shadow-lg overflow-hidden rounded-circle">
-                                                        <img src="assets/images/users/avatar-4.jpg" alt="" class="img-fluid">
-                                                    </div>
-                                                </div>
-                                            </li>
-                                            <li>
-                                                <div class="avatar-sm d-inline-block">
-                                                    <div class="avatar-title bg-white shadow-lg overflow-hidden rounded-circle">
-                                                        <img src="assets/images/users/avatar-5.jpg" alt="" class="img-fluid">
-                                                    </div>
-                                                </div>
-                                            </li>
-                                        </ul>
-                                    </div>
-
-                                    <div class="text-center">
-                                        <p class="text-white opacity-75 mb-0 mt-3">
-                                            &copy;
-                                            {{year}} Steex. Crafted with <i class="mdi mdi-heart text-danger"></i> by Themesbrand
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <!--end col-->
-                        <div class="col-xxl-6 mx-auto">
-                            <div class="card mb-0 border-0 shadow-none mb-0">
-                                <div class="card-body p-sm-5 m-lg-4">
-                                    <div class="text-center mt-2">
-                                        <h5 class="fs-3xl">Create your free account</h5>
-                                        <p class="text-muted">Get your free Steex account now</p>
-                                    </div>
-                                    <div class="p-2 mt-5">
-                                        <form [formGroup]="signupForm" (ngSubmit)="onSubmit()" class="needs-validation" novalidate action="index.html">
-
-                                            <div class="mb-3">
-                                                <label for="useremail" class="form-label">Email <span class="text-danger">*</span></label>
-                                                <input type="email" class="form-control" id="useremail" placeholder="Enter email address" required formControlName="email" [ngClass]="{ 'is-invalid': submitted && f['email'].errors }">
-                                                <div class="invalid-feedback">
-                                                    Please enter email
-                                                </div>
-                                            </div>
-                                            <div class="mb-3">
-                                                <label for="username" class="form-label">Username <span class="text-danger">*</span></label>
-                                                <input type="text" class="form-control " id="username" placeholder="Enter username" required formControlName="name" [ngClass]="{ 'is-invalid': submitted && f['name'].errors }">
-                                                <div class="invalid-feedback">
-                                                    Please enter username
-                                                </div>
-                                            </div>
-
-                                            <div class="mb-3">
-                                                <label class="form-label" for="password-input">Password <span class="text-danger">*</span></label>
-                                                <div class="position-relative auth-pass-inputgroup">
-                                                    <input [type]="fieldTextType ? 'text' : 'password'" class="form-control password-input pe-5" placeholder="Enter password" id="password-input" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}" required formControlName="password" [ngClass]="{ 'is-invalid': submitted && f['password'].errors }">
-                                                    <button class="btn btn-link position-absolute end-0 top-0 text-decoration-none text-muted password-addon" type="button" id="password-addon"><i class="ri-eye-fill align-middle" [ngClass]="{'mdi-eye-off-outline': !fieldTextType, 'mdi-eye-outline': fieldTextType
-                                                    }" (click)="toggleFieldTextType()"></i></button>
-
-                                                </div>
-                                            </div>
-
-                                            <div class="mb-4">
-                                                <p class="mb-0 fs-xs text-muted fst-italic">By registering you agree to the Steex <a routerLink="/pages/term-conditions" class="text-primary text-decoration-underline fst-normal fw-medium">Terms of Use</a></p>
-                                            </div>
-
-                                            @if (submitted && f['password'].errors) {
-                                            <div id="password-contain" class="p-3 bg-light mb-2 rounded" class="invalid-feedback">
-                                                <h5 class="fs-sm">Password must contain:</h5>
-                                                <p id="pass-length" class="invalid fs-xs mb-2">Minimum <b>8 characters</b></p>
-                                                <p id="pass-lower" class="invalid fs-xs mb-2">At <b>lowercase</b> letter (a-z)</p>
-                                                <p id="pass-upper" class="invalid fs-xs mb-2">At least <b>uppercase</b> letter (A-Z)</p>
-                                                <p id="pass-number" class="invalid fs-xs mb-0">A least <b>number</b> (0-9)</p>
-                                            </div>
-                                            }
-
-                                            <div class="mt-4">
-                                                <button class="btn btn-primary w-100" type="submit">Sign Up</button>
-                                            </div>
-
-                                            <div class="mt-4 text-center">
-                                                <div class="signin-other-title position-relative">
-                                                    <h5 class="fs-sm mb-4 title text-muted">Create account with</h5>
-                                                </div>
-
-                                                <div>
-                                                    <button type="button" class="btn btn-subtle-primary btn-icon "><i class="ri-facebook-fill fs-lg"></i></button>
-                                                    <button type="button" class="btn btn-subtle-danger btn-icon "><i class="ri-google-fill fs-lg"></i></button>
-                                                    <button type="button" class="btn btn-subtle-dark btn-icon "><i class="ri-github-fill fs-lg"></i></button>
-                                                    <button type="button" class="btn btn-subtle-info btn-icon "><i class="ri-twitter-fill fs-lg"></i></button>
-                                                </div>
-                                            </div>
-                                        </form>
-                                    </div>
-                                    <div class="mt-4 text-center">
-                                        <p class="mb-0">Already have an account ? <a routerLink="/auth/login" class="fw-semibold text-primary text-decoration-underline"> Signin </a> </p>
-                                    </div>
-                                </div><!-- end card body -->
-                            </div><!-- end card -->
-                        </div>
-                        <!--end col-->
-                    </div>
-                    <!--end row-->
-                </div>
-            </div>
-            <!--end col-->
-        </div>
-        <!--end row-->
+<main class="split" id="app">
+  <!-- Right: Logo / brand panel -->
+  <aside class="pane right">
+    <div class="brand" aria-label="Logix – Lijan Teck brand">
+      <div class="logo" aria-hidden="true">LJ</div>
+      <h1>Lijan Teck</h1>
+      <div class="tag">Logix</div>
     </div>
-    <!--end container-->
-</section>
+  </aside>
+
+  <!-- Left: Registration form -->
+  <section class="pane left">
+    <form class="card" [formGroup]="signupForm" (ngSubmit)="onSubmit()" novalidate>
+      <h2 class="title">{{ currentLanguage === 'ar' ? 'إنشاء حساب جديد' : 'Create New Account' }}</h2>
+      <p class="subtitle muted" [innerHTML]="currentLanguage === 'ar' ? 'أكمل بياناتك لإنشاء حسابك على <b>Lijan Teck</b>.' : 'Complete your data to create your account on <b>Lijan Teck</b>.'"></p>
+
+      <!-- Row 1: Full Name & Company Name -->
+      <div class="field-row">
+        <div class="field">
+          <label for="fullName">{{ currentLanguage === 'ar' ? 'الاسم الكامل' : 'Full Name' }}</label>
+          <input 
+            id="fullName" 
+            name="fullName" 
+            class="inp" 
+            type="text" 
+            formControlName="fullName"
+            [placeholder]="currentLanguage === 'ar' ? 'أدخل اسمك كما سيظهر في الفواتير.' : 'Enter your name as it will appear on invoices.'" 
+            autocomplete="name" 
+            [ngClass]="{ 'is-invalid': submitted && f['fullName'].errors }"
+          />
+          @if (submitted && f['fullName'].errors) {
+            <div class="error">
+              {{ currentLanguage === 'ar' ? 'الاسم الكامل مطلوب' : 'Full name is required' }}
+            </div>
+          }
+        </div>
+
+        <div class="field">
+          <label for="companyName">{{ currentLanguage === 'ar' ? 'اسم الشركة' : 'Company Name' }}</label>
+          <input 
+            id="companyName" 
+            name="companyName" 
+            class="inp" 
+            type="text" 
+            formControlName="companyName"
+            [placeholder]="currentLanguage === 'ar' ? 'أدخل اسم الشركة' : 'Enter company name'" 
+            autocomplete="organization" 
+            [ngClass]="{ 'is-invalid': submitted && f['companyName'].errors }"
+          />
+          @if (submitted && f['companyName'].errors) {
+            <div class="error">
+              {{ currentLanguage === 'ar' ? 'اسم الشركة مطلوب' : 'Company name is required' }}
+            </div>
+          }
+        </div>
+      </div>
+
+      <!-- Row 2: Email & Country -->
+      <div class="field-row">
+        <div class="field">
+          <label for="email">{{ currentLanguage === 'ar' ? 'البريد الإلكتروني' : 'Email Address' }}</label>
+          <input 
+            id="email" 
+            name="email" 
+            class="inp" 
+            type="email" 
+            formControlName="email"
+            [placeholder]="currentLanguage === 'ar' ? 'أدخل البريد الإلكتروني' : 'Enter email address'" 
+            autocomplete="email" 
+            [ngClass]="{ 'is-invalid': submitted && f['email'].errors }"
+          />
+          @if (submitted && f['email'].errors) {
+            <div class="error">
+              {{ currentLanguage === 'ar' ? 'البريد الإلكتروني مطلوب' : 'Email address is required' }}
+            </div>
+          }
+        </div>
+
+        <div class="field">
+          <label for="country">{{ currentLanguage === 'ar' ? 'الدولة' : 'Country' }}</label>
+          <select 
+            id="country" 
+            name="country" 
+            class="inp" 
+            formControlName="country"
+            [ngClass]="{ 'is-invalid': submitted && f['country'].errors }"
+          >
+            <option value="">{{ currentLanguage === 'ar' ? 'اختر الدولة' : 'Choose Country' }}</option>
+            <option value="SA">السعودية</option>
+            <option value="AE">الإمارات العربية المتحدة</option>
+            <option value="KW">الكويت</option>
+            <option value="QA">قطر</option>
+            <option value="BH">البحرين</option>
+            <option value="OM">عمان</option>
+            <option value="JO">الأردن</option>
+            <option value="LB">لبنان</option>
+            <option value="EG">مصر</option>
+            <option value="MA">المغرب</option>
+            <option value="TN">تونس</option>
+            <option value="DZ">الجزائر</option>
+          </select>
+          @if (submitted && f['country'].errors) {
+            <div class="error">
+              {{ currentLanguage === 'ar' ? 'الدولة مطلوبة' : 'Country is required' }}
+            </div>
+          }
+        </div>
+      </div>
+
+      <!-- Row 3: Phone & Username -->
+      <div class="field-row">
+        <div class="field">
+          <label for="phone">{{ currentLanguage === 'ar' ? 'رقم الهاتف' : 'Phone Number' }}</label>
+          <input 
+            id="phone" 
+            name="phone" 
+            class="inp" 
+            type="tel" 
+            formControlName="phone"
+            [placeholder]="currentLanguage === 'ar' ? '+9665XXXXXXXX' : '+9665XXXXXXXX'" 
+            autocomplete="tel" 
+            [ngClass]="{ 'is-invalid': submitted && f['phone'].errors }"
+          />
+          <div class="helper-text">
+            {{ currentLanguage === 'ar' ? 'أدخل رقم هاتف صالح بصيغة دولية.' : 'Enter a valid phone number in international format.' }}
+          </div>
+          @if (submitted && f['phone'].errors) {
+            <div class="error">
+              {{ currentLanguage === 'ar' ? 'رقم الهاتف مطلوب' : 'Phone number is required' }}
+            </div>
+          }
+        </div>
+
+        <div class="field">
+          <label for="username">{{ currentLanguage === 'ar' ? 'اسم المستخدم' : 'Username' }}</label>
+          <input 
+            id="username" 
+            name="username" 
+            class="inp" 
+            type="text" 
+            formControlName="username"
+            [placeholder]="currentLanguage === 'ar' ? 'أدخل اسم المستخدم' : 'Enter username'" 
+            autocomplete="username" 
+            [ngClass]="{ 'is-invalid': submitted && f['username'].errors }"
+          />
+          <div class="helper-text">
+            {{ currentLanguage === 'ar' ? '٤-٣٠ حرفاً، بدون مسافات.' : '4-30 characters, no spaces.' }}
+          </div>
+          @if (submitted && f['username'].errors) {
+            <div class="error">
+              {{ currentLanguage === 'ar' ? 'اسم المستخدم مطلوب' : 'Username is required' }}
+            </div>
+          }
+        </div>
+      </div>
+
+      <!-- Row 4: Password & Confirm Password -->
+      <div class="field-row">
+        <div class="field">
+          <label for="password">{{ currentLanguage === 'ar' ? 'كلمة المرور' : 'Password' }}</label>
+          <div class="auth-pass-inputgroup">
+            <input 
+              id="password" 
+              name="password" 
+              class="inp" 
+              [type]="fieldTextType ? 'text' : 'password'" 
+              formControlName="password"
+              [placeholder]="currentLanguage === 'ar' ? 'أدخل كلمة المرور' : 'Enter password'" 
+              autocomplete="new-password" 
+              [ngClass]="{ 'is-invalid': submitted && f['password'].errors }"
+            />
+          </div>
+          
+          @if (submitted && f['password'].errors) {
+            <div class="error">
+              {{ currentLanguage === 'ar' ? 'كلمة المرور غير صالحة' : 'Password is required' }}
+            </div>
+          }
+        </div>
+  
+        <div class="field">
+          <label for="confirmPassword">{{ currentLanguage === 'ar' ? 'تأكيد كلمة المرور' : 'Confirm Password' }}</label>
+          <div class="auth-pass-inputgroup">
+            <input 
+              id="confirmPassword" 
+              name="confirmPassword" 
+              class="inp" 
+              [type]="confirmFieldTextType ? 'text' : 'password'" 
+              formControlName="confirmPassword"
+              [placeholder]="currentLanguage === 'ar' ? 'أعد إدخال كلمة المرور' : 'Re-enter password'" 
+              autocomplete="new-password" 
+              [ngClass]="{ 'is-invalid': submitted && f['confirmPassword'].errors }"
+            />
+          </div>
+          
+          @if (submitted && f['confirmPassword'].errors) {
+            <div class="error">
+              {{ currentLanguage === 'ar' ? 'تأكيد كلمة المرور مطلوب' : 'Password confirmation is required' }}
+            </div>
+          }
+        </div>
+        <div class="field">
+          <div class="helper-text">
+            {{ currentLanguage === 'ar' ? '٨ أحرف، حرف كبير/صغير، رقم، رمز' : '8 characters, uppercase/lowercase letter, number, symbol' }}
+          </div>
+        </div>
+      </div>
+
+      <div class="field">
+        <div class="helper">
+          <label>
+            <input type="checkbox" id="terms" formControlName="terms" />
+            <span class="muted">
+              {{ currentLanguage === 'ar' ? 'أوافق على' : 'I agree to' }}
+              <a href="#" class="accent-link">{{ currentLanguage === 'ar' ? 'الشروط والخصوصية' : 'Terms and Privacy' }}</a>
+            </span>
+          </label>
+        </div>
+        @if (submitted && f['terms'].errors) {
+          <div class="error">
+            {{ currentLanguage === 'ar' ? 'يجب الموافقة على الشروط والأحكام' : 'You must agree to the terms and conditions' }}
+          </div>
+        }
+      </div>
+
+      <div class="actions">
+        <button class="btn" type="submit" [disabled]="loading">
+          {{ loading ? (currentLanguage === 'ar' ? 'جاري إنشاء الحساب...' : 'Creating Account...') : (currentLanguage === 'ar' ? 'إنشاء الحساب' : 'Create Account') }}
+        </button>
+        
+        <button type="button" class="btn btn-outline" (click)="goToLogin()">
+          {{ currentLanguage === 'ar' ? 'تسجيل الدخول' : 'Login' }}
+        </button>
+        
+        @if (error) {
+          <div class="error" aria-live="polite">{{ error }}</div>
+        }
+      </div>
+    </form>
+
+    <footer>
+      <div class="foot">
+        © {{ year }} <strong>Logix</strong> — 
+        {{ currentLanguage === 'ar' ? 'جميع الحقوق محفوظة. لوجكس ولجان تك علامات تجارية.' : 'All rights reserved. Logix and Lijan Teck are trademarks.' }}
+      </div>
+    </footer>
+  </section>
+</main>

@@ -8,6 +8,9 @@ export interface RegisterRequest {
   email: string;
   password: string;
   countryCode?: string; // اختياري - الباك يجعلها SA افتراضيًا
+  fullName?: string;
+  phoneNumber?: string;
+  username?: string;
 }
 
 export interface LoginRequest {
