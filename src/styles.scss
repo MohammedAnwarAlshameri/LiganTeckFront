@@ -21,6 +21,118 @@
   --accent-3: #59c7c2;
   --danger: #e44d4d;
   --ring: rgba(15, 143, 138, 0.25);
+  
+  // Sidebar colors using the new color scheme
+  --bs-vertical-menu-bg: var(--text);
+  --bs-vertical-menu-border: var(--accent);
+  --bs-vertical-menu-item-color: var(--accent-3);
+  --bs-vertical-menu-item-hover-color: var(--surface);
+  --bs-vertical-menu-item-hover-bg: var(--accent);
+  --bs-vertical-menu-item-active-color: var(--surface);
+  --bs-vertical-menu-item-active-bg: var(--accent-2);
+  --bs-vertical-menu-sub-item-color: var(--accent-3);
+  --bs-vertical-menu-sub-item-hover-color: var(--surface);
+  --bs-vertical-menu-sub-item-active-color: var(--surface);
+  --bs-vertical-menu-title-color: var(--accent-3);
+}
+
+// Apply custom sidebar colors
+.navbar-menu {
+  background: var(--bs-vertical-menu-bg) !important;
+  border-right-color: var(--bs-vertical-menu-border) !important;
+  
+  .navbar-nav {
+    .nav-link {
+      color: var(--bs-vertical-menu-item-color) !important;
+      
+      &:hover {
+        color: var(--bs-vertical-menu-item-hover-color) !important;
+        background-color: var(--bs-vertical-menu-item-hover-bg) !important;
+      }
+      
+      &.active {
+        color: var(--bs-vertical-menu-item-active-color) !important;
+        background-color: var(--bs-vertical-menu-item-active-bg) !important;
+      }
+      
+      i {
+        color: inherit;
+      }
+    }
+    
+    .menu-title {
+      color: var(--bs-vertical-menu-title-color) !important;
+    }
+  }
+}
+
+// Custom brand logo styling
+.brand-logo {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  color: var(--surface);
+  font-weight: bold;
+  font-size: 18px;
+  border-radius: 8px;
+  margin: 0;
+}
+
+.brand-text {
+  display: flex;
+  flex-direction: column;
+  
+  h1 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--surface);
+    line-height: 1.2;
+  }
+  
+  .brand-tag {
+    font-size: 12px;
+    color: var(--accent-3);
+    font-weight: 400;
+    margin-top: 2px;
+  }
+}
+
+.logo-sm .brand-logo {
+  width: 32px;
+  height: 32px;
+  font-size: 14px;
+  margin: 0;
+}
+
+.logo-lg {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+// Logo container positioning
+.navbar-brand-box {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 15px 20px;
+  width: 100%;
+  
+  .logo {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    width: 100%;
+    text-decoration: none;
+    
+    &:hover {
+      text-decoration: none;
+    }
+  }
 }
 
 .emoji-mart {

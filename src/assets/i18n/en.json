@@ -1,63 +1,14 @@
 {
-  "MENUITEMS": {
-    "MENU": {
-      "TEXT": "MENU"
-    },
-    "DASHBOARD": {
-      "TEXT": "Dashboards",
-      "LIST": {
-        "ANALYTICS": "Analytics",
-        "CRM": "CRM",
-        "ECOMMERCE": "Ecommerce",
-        "LEARNING": "Learning",
-        "REALESTATE": "Real Estate"
-      }
-    },
-    "APPS": {
-      "TEXT": "Apps",
-      "LIST": {
-        "CALENDAR": "Calendar",
-        "CHAT": "Chat",
-        "EMAIL": "Email",
-        "ECOMMERCE": "Ecommerce",
-        "PRODUCTS": "Products",
-        "PRODUCTGRID": "Products Grid",
-        "PRODUCTDETAILS": "Product Details",
-        "CREATEPRODUCT": "Create Product",
-        "ORDERS": "Orders",
-        "ORDEROVERVIEW": "Order Overview",
-        "CUSTOMERS": "Customers",
-        "SHOPPINGCART": "Shopping Cart",
-        "CHECKOUT": "Checkout",
-        "SELLERS": "Sellers",
-        "SELLEROVERVIEW": "Seller Overview",
-        "FILEMANAGER": "File Manager",
-        "LEARNING": "Learning",
-        "COURSES": "Courses",
-        "LISTVIEW": "List View",
-        "GRIDVIEW": "Grid View",
-        "CATEGORY": "Category",
-        "OVERVIEW": "Overview",
-        "CREATECOURSE": "Create Course",
-        "STUDENTS": "Students",
-        "MYSUBSCRIPTIONS": "My Subscriptions",
-        "MYCOURSES": "My Courses",
-        "INSTRUCTORS": "Instructors",
-        "CREATEINSTRUCTOR": "Create Instructor",
-        "INVOICES": "Invoices",
-        "CREATEINVOICE": "Create Invoice",
-        "SUPPORTTICKETS": "Support Tickets",
-        "REALESTATE": "Real Estate",
-        "LISTINGGRID": "Listing Grid",
-        "LISTINGLIST": "Listing List",
-        "LISTINGMAP": "Listing Map",
-        "PROPERTYOVERVIEW": "Property Overview",
-        "AGENT": "Agent",
-        "AGENCIES": "Agencies",
-        "ADDPROPERTY": "Add Property",
-        "EARNINGS": "Earnings"
-      }
-    },
+    "MENUITEMS": {
+      "DASHBOARD": {
+        "TEXT": "Dashboard"
+      },
+      "APPS": {
+        "LIST": {
+          "CLIENTS": "Clients",
+          "SUBSCRIPTIONS": "Subscriptions"
+        }
+      },
     "PAGES": {
       "TEXT": "Pages"
     },
