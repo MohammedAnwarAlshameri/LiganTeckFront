@@ -1,63 +1,14 @@
 {
-  "MENUITEMS": {
-    "MENU": {
-      "TEXT": "قائمة طعام"
-    },
-    "DASHBOARD": {
-      "TEXT": "لوحات القيادة",
-      "LIST": {
-        "ANALYTICS": "تحليلات",
-        "CRM": "CRM",
-        "ECOMMERCE": "التجارة الإلكترونية",
-        "LEARNING": "تعلُّم",
-        "REALESTATE": "العقارات"
-      }
-    },
-    "APPS": {
-      "TEXT": "تطبيقات",
-      "LIST": {
-        "CALENDAR": "تقويم",
-        "CHAT": "محادثة",
-        "EMAIL": "بريد إلكتروني",
-        "ECOMMERCE": "التجارة الإلكترونية",
-        "PRODUCTS": "منتجات",
-        "PRODUCTGRID": "شبكة المنتجات",
-        "PRODUCTDETAILS": "تفاصيل المنتج",
-        "CREATEPRODUCT": "إنشاء منتج",
-        "ORDERS": "طلبات",
-        "ORDEROVERVIEW": "نظرة عامة على الطلب",
-        "CUSTOMERS": "عملاء",
-        "SHOPPINGCART": "عربة التسوق",
-        "CHECKOUT": "الدفع",
-        "SELLERS": "الباعة",
-        "SELLEROVERVIEW": "نظرة عامة على البائع",
-        "FILEMANAGER": "مدير الملفات",
-        "LEARNING": "تعلُّم",
-        "COURSES": "الدورات",
-        "LISTVIEW": "عرض القائمة",
-        "GRIDVIEW": "عرض شبكي",
-        "CATEGORY": "فئة",
-        "OVERVIEW": "ملخص",
-        "CREATECOURSE": "إنشاء دورة",
-        "STUDENTS": "طلاب",
-        "MYSUBSCRIPTIONS": "اشتراكاتي",
-        "MYCOURSES": "دوراتي",
-        "INSTRUCTORS": "المدربين",
-        "CREATEINSTRUCTOR": "إنشاء مدرس",
-        "INVOICES": "الفواتير",
-        "CREATEINVOICE": "إنشاء فاتورة",
-        "SUPPORTTICKETS": "تذاكر الدعم الفني",
-        "REALESTATE": "العقارات",
-        "LISTINGGRID": "قائمة الشبكة",
-        "LISTINGLIST": "قائمة القائمة",
-        "LISTINGMAP": "خريطة القائمة",
-        "PROPERTYOVERVIEW": "نظرة عامة على الملكية",
-        "AGENT": "عامل",
-        "AGENCIES": "وكالات",
-        "ADDPROPERTY": "أضف خاصية",
-        "EARNINGS": "المكاسب"
-      }
-    },
+    "MENUITEMS": {
+      "DASHBOARD": {
+        "TEXT": "الصفحة الرئيسية"
+      },
+      "APPS": {
+        "LIST": {
+          "CLIENTS": "العملاء",
+          "SUBSCRIPTIONS": "الاشتراكات"
+        }
+      },
     "PAGES": {
       "TEXT": "الصفحات"
     },

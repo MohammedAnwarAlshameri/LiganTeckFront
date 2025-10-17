@@ -31,4 +31,11 @@ export class LanguageService {
     this.cookieService.set('lang', lang);
   }
 
+  /***
+   * Get current language
+   */
+  public getCurrentLanguage(): string {
+    return this.cookieService.get('lang') || 'ar';
+  }
+
 }
