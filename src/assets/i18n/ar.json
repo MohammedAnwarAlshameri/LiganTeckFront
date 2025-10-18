@@ -6,7 +6,10 @@
       "APPS": {
         "LIST": {
           "CLIENTS": "العملاء",
-          "SUBSCRIPTIONS": "الاشتراكات"
+          "SUBSCRIPTIONS": "الاشتراكات",
+          "TICKETS": "التذاكر",
+          "TICKETS_ADMIN": "إدارة التذاكر",
+          "TICKETS_USER": "تذاكري"
         }
       },
     "PAGES": {

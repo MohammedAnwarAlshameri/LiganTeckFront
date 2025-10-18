@@ -6,7 +6,10 @@
       "APPS": {
         "LIST": {
           "CLIENTS": "Clients",
-          "SUBSCRIPTIONS": "Subscriptions"
+          "SUBSCRIPTIONS": "Subscriptions",
+          "TICKETS": "Tickets",
+          "TICKETS_ADMIN": "Manage Tickets",
+          "TICKETS_USER": "My Tickets"
         }
       },
     "PAGES": {

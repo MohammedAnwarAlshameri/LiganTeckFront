@@ -18,6 +18,28 @@
       <h2 class="title">{{ currentLanguage === 'ar' ? 'تسجيل الدخول' : 'Sign In' }}</h2>
       <p class="subtitle muted" [innerHTML]="currentLanguage === 'ar' ? 'قم بتسجيل الدخول إلى <b>Lijan Teck</b>.' : 'Sign in to <b>Lijan Teck</b>.'"></p>
 
+      <!-- Toggle للتبديل بين Admin و Customer -->
+      <div class="login-mode-toggle">
+        <button 
+          type="button" 
+          [class.active]="!isAdminMode" 
+          (click)="isAdminMode = false; error = ''"
+          class="mode-btn"
+        >
+          <i class="mdi mdi-account"></i>
+          {{ currentLanguage === 'ar' ? 'عميل' : 'Customer' }}
+        </button>
+        <button 
+          type="button" 
+          [class.active]="isAdminMode" 
+          (click)="isAdminMode = true; error = ''"
+          class="mode-btn"
+        >
+          <i class="mdi mdi-shield-account"></i>
+          {{ currentLanguage === 'ar' ? 'مدير' : 'Admin' }}
+        </button>
+      </div>
+
       <div class="field">
         <label for="username">{{ currentLanguage === 'ar' ? 'تسجيل الدخول' : 'Login' }}</label>
         <input 
