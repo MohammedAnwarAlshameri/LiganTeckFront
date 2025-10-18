@@ -56,6 +56,10 @@ import { SubscriptionComponent } from './subscription/subscription.component';
 import { TicketComponent } from './ticket/ticket.component';
 import { TicketAdminComponent } from './ticket-admin/ticket-admin.component';
 import { TicketUserComponent } from './ticket-user/ticket-user.component';
+import { InvoicesAdminComponent } from './invoices/invoices-admin.component';
+import { MyInvoicesComponent } from './invoices/my-invoices.component';
+import { SubscriptionsAdminComponent } from './subscriptions/subscriptions-admin.component';
+import { MySubscriptionsComponent } from './subscriptions/my-subscriptions.component';
 
 const DEFAULT_DROPZONE_CONFIG: DropzoneConfigInterface = {
   // Change this to your upload POST address:
@@ -72,6 +76,10 @@ const DEFAULT_DROPZONE_CONFIG: DropzoneConfigInterface = {
    TicketComponent,
    TicketAdminComponent,
    TicketUserComponent,
+   InvoicesAdminComponent,
+   MyInvoicesComponent,
+   SubscriptionsAdminComponent,
+   MySubscriptionsComponent,
   ],
   imports: [
     CommonModule,

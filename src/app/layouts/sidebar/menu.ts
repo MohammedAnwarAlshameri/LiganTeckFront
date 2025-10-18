@@ -21,20 +21,16 @@ export const MENU: MenuItem[] = [
     },
     {
         id: 4,
-        label: 'MENUITEMS.APPS.LIST.TICKETS',
+        label: 'MENUITEMS.APPS.LIST.TICKETS-ADMIN',
         icon: 'ph-ticket',
-        link: '/apps/ticket'
-    },
-    {
-        id: 5,
-        label: 'MENUITEMS.APPS.LIST.TICKETS_ADMIN',
-        icon: 'ph-clipboard-text',
         link: '/apps/ticket-admin'
     },
     {
-        id: 6,
+        id: 5,
         label: 'MENUITEMS.APPS.LIST.TICKETS_USER',
-        icon: 'ph-user-circle',
+        icon: 'ph-ticket',
         link: '/apps/ticket-user'
     }
+    
+
 ]

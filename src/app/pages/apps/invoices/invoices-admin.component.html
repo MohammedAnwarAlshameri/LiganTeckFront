@@ -1,0 +1,175 @@
+<!-- src/app/pages/apps/invoices/invoices-admin.component.html -->
+
+<!-- Start Breadcrumbs -->
+<app-breadcrumbs title="الفواتير - إدارة" [breadcrumbItems]="breadCrumbItems"></app-breadcrumbs>
+<!-- End Breadcrumbs -->
+
+<div class="row">
+  <div class="col-lg-12">
+    <div class="card">
+      <div class="card-header">
+        <h4 class="card-title mb-0">إدارة الفواتير</h4>
+      </div>
+
+      <div class="card-body">
+        <div id="invoiceList">
+
+          <div class="row g-4 mb-3">
+            <div class="col-sm-auto">
+              <div class="d-flex gap-2">
+                <select class="form-select" [(ngModel)]="selectedStatus" (change)="onStatusFilterChange()">
+                  <option value="all">كل الحالات</option>
+                  <option value="1">قيد الانتظار</option>
+                  <option value="2">مدفوعة</option>
+                  <option value="3">ملغاة</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="col-sm">
+              <div class="d-flex justify-content-sm-end">
+                <div class="search-box ms-2">
+                  <input
+                    type="text"
+                    class="form-control search"
+                    placeholder="بحث برقم الفاتورة..."
+                    [(ngModel)]="q"
+                    (keyup.enter)="doSearch()">
+                  <i class="ri-search-line search-icon"></i>
+                </div>
+                <button class="btn btn-primary ms-2" (click)="doSearch()">
+                  <i class="ri-search-line"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="table-responsive table-card mt-3 mb-1">
+            <table class="table align-middle table-nowrap">
+              <thead class="table-light">
+                <tr>
+                  <th scope="col" style="width: 50px;">
+                    <div class="form-check">
+                      <input class="form-check-input" type="checkbox" id="checkAll" 
+                             [(ngModel)]="masterSelected" (change)="checkUncheckAll($event)">
+                    </div>
+                  </th>
+                  <th>رقم الفاتورة</th>
+                  <th>رقم الاشتراك</th>
+                  <th>الإجمالي الفرعي</th>
+                  <th>الخصم</th>
+                  <th>الضريبة</th>
+                  <th>الإجمالي</th>
+                  <th>الحالة</th>
+                  <th>تاريخ الإصدار</th>
+                  <th>تاريخ الاستحقاق</th>
+                  <th>تاريخ الدفع</th>
+                  <th>إجراءات</th>
+                </tr>
+              </thead>
+
+              <tbody class="list form-check-all">
+                <tr *ngIf="loading">
+                  <td colspan="12" class="text-center">جاري التحميل...</td>
+                </tr>
+
+                <tr *ngFor="let invoice of paginatedData; trackBy: trackById">
+                  <th scope="row">
+                    <div class="form-check">
+                      <input class="form-check-input" type="checkbox" 
+                             [(ngModel)]="invoice.state" (change)="syncChecked()">
+                    </div>
+                  </th>
+                  <td>{{ invoice.invoiceNumber }}</td>
+                  <td>{{ invoice.subscriptionId }}</td>
+                  <td>{{ formatAmount(invoice.amountSubtotal) }} {{ invoice.currencyCode }}</td>
+                  <td>{{ formatAmount(invoice.discountAmount) }} {{ invoice.currencyCode }}</td>
+                  <td>{{ formatAmount(invoice.taxAmount) }} {{ invoice.currencyCode }}</td>
+                  <td class="fw-semibold">{{ formatAmount(invoice.amountTotal) }} {{ invoice.currencyCode }}</td>
+                  <td>
+                    <span class="badge text-uppercase"
+                          [ngClass]="{
+                            'bg-warning-subtle text-warning': invoice.statusColor === 'warning',
+                            'bg-success-subtle text-success': invoice.statusColor === 'success',
+                            'bg-danger-subtle text-danger': invoice.statusColor === 'danger'
+                          }">
+                      {{ invoice.statusName }}
+                    </span>
+                  </td>
+                  <td>{{ formatDate(invoice.issueDateUtc) }}</td>
+                  <td>{{ formatDate(invoice.dueDateUtc) }}</td>
+                  <td>{{ formatDate(invoice.paidAtUtc) }}</td>
+                  <td>
+                    <div class="d-flex gap-2">
+                      <button class="btn btn-sm btn-success" 
+                              *ngIf="invoice.invoiceStatusid === 1"
+                              (click)="openPayModal(invoice)"
+                              title="تسجيل الدفع">
+                        <i class="ri-money-dollar-circle-line"></i>
+                      </button>
+                      <button class="btn btn-sm btn-danger" 
+                              *ngIf="invoice.invoiceStatusid === 1"
+                              (click)="cancelInvoice(invoice.invoiceId)"
+                              title="إلغاء الفاتورة">
+                        <i class="ri-close-circle-line"></i>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+
+                <tr *ngIf="!loading && paginatedData.length === 0">
+                  <td colspan="12" class="text-center text-muted">
+                    <i class="ri-inbox-line fs-1"></i>
+                    <p class="mt-2 mb-0">لا توجد فواتير</p>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="d-flex justify-content-end">
+            <div class="pagination-wrap hstack gap-2">
+              <pagination
+                [totalItems]="total"
+                [itemsPerPage]="pageSize"
+                [maxSize]="5"
+                [(ngModel)]="page">
+              </pagination>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Pay Modal -->
+<div class="modal fade" #payModal tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">تسجيل الدفع</h4>
+        <button type="button" class="btn-close" (click)="closePayModal()"></button>
+      </div>
+      <div class="modal-body">
+        <p>رقم الفاتورة: <strong>{{ selectedInvoice?.invoiceNumber }}</strong></p>
+        <p>المبلغ: <strong>{{ formatAmount(selectedInvoice?.amountTotal || 0) }} {{ selectedInvoice?.currencyCode }}</strong></p>
+        
+        <div class="mb-3">
+          <label class="form-label">طريقة الدفع</label>
+          <select class="form-select" [(ngModel)]="paymentMethodId">
+            <option value="1">نقدي</option>
+            <option value="2">بطاقة ائتمان</option>
+            <option value="3">تحويل بنكي</option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-light" (click)="closePayModal()">إلغاء</button>
+        <button type="button" class="btn btn-success" (click)="confirmPay()">تأكيد الدفع</button>
+      </div>
+    </div>
+  </div>
+</div>
+
