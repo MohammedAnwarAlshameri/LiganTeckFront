@@ -27,44 +27,25 @@
       <h2 class="title">{{ currentLanguage === 'ar' ? 'إنشاء حساب جديد' : 'Create New Account' }}</h2>
       <p class="subtitle muted" [innerHTML]="currentLanguage === 'ar' ? 'أكمل بياناتك لإنشاء حسابك على <b>Lijan Teck</b>.' : 'Complete your data to create your account on <b>Lijan Teck</b>.'"></p>
 
-      <!-- Row 1: Full Name & Company Name -->
-      <div class="field-row">
-        <div class="field">
-          <label for="fullName">{{ currentLanguage === 'ar' ? 'الاسم الكامل' : 'Full Name' }}</label>
-          <input 
-            id="fullName" 
-            name="fullName" 
-            class="inp" 
-            type="text" 
-            formControlName="fullName"
-            [placeholder]="currentLanguage === 'ar' ? 'أدخل اسمك كما سيظهر في الفواتير.' : 'Enter your name as it will appear on invoices.'" 
-            autocomplete="name" 
-            [ngClass]="{ 'is-invalid': submitted && f['fullName'].errors }"
-          />
-          @if (submitted && f['fullName'].errors) {
-            <div class="error">
-              {{ currentLanguage === 'ar' ? 'الاسم الكامل مطلوب' : 'Full name is required' }}
-            </div>
-          }
+      <!-- Row 1: Company Name -->
+      <div class="field">
+        <label for="companyName">{{ currentLanguage === 'ar' ? 'اسم الشركة' : 'Company Name' }}</label>
+        <input 
+          id="companyName" 
+          name="companyName" 
+          class="inp" 
+          type="text" 
+          formControlName="companyName"
+          [placeholder]="currentLanguage === 'ar' ? 'أدخل اسم الشركة' : 'Enter company name'" 
+          autocomplete="organization" 
+          [ngClass]="{ 'is-invalid': submitted && f['companyName'].errors }"
+        />
+        
+        <div class="error" *ngIf="submitted && f['companyName'].errors?.['required']">
+          {{ currentLanguage === 'ar' ? 'اسم الشركة مطلوب' : 'Company name is required' }}
         </div>
-
-        <div class="field">
-          <label for="companyName">{{ currentLanguage === 'ar' ? 'اسم الشركة' : 'Company Name' }}</label>
-          <input 
-            id="companyName" 
-            name="companyName" 
-            class="inp" 
-            type="text" 
-            formControlName="companyName"
-            [placeholder]="currentLanguage === 'ar' ? 'أدخل اسم الشركة' : 'Enter company name'" 
-            autocomplete="organization" 
-            [ngClass]="{ 'is-invalid': submitted && f['companyName'].errors }"
-          />
-          @if (submitted && f['companyName'].errors) {
-            <div class="error">
-              {{ currentLanguage === 'ar' ? 'اسم الشركة مطلوب' : 'Company name is required' }}
-            </div>
-          }
+        <div class="warn" *ngIf="f['companyName'].errors?.['duplicate']">
+          {{ currentLanguage === 'ar' ? 'اسم الشركة موجود بالفعل' : 'Company name already exists' }}
         </div>
       </div>
 
@@ -82,11 +63,16 @@
             autocomplete="email" 
             [ngClass]="{ 'is-invalid': submitted && f['email'].errors }"
           />
-          @if (submitted && f['email'].errors) {
-            <div class="error">
-              {{ currentLanguage === 'ar' ? 'البريد الإلكتروني مطلوب' : 'Email address is required' }}
-            </div>
-          }
+
+          <div class="error" *ngIf="submitted && f['email'].errors?.['required']">
+            {{ currentLanguage === 'ar' ? 'البريد الإلكتروني مطلوب' : 'Email address is required' }}
+          </div>
+          <div class="error" *ngIf="f['email'].errors?.['email']">
+            {{ currentLanguage === 'ar' ? 'صيغة بريد غير صحيحة' : 'Invalid email format' }}
+          </div>
+          <div class="warn" *ngIf="f['email'].errors?.['duplicate']">
+            {{ currentLanguage === 'ar' ? 'البريد الإلكتروني موجود بالفعل' : 'Email already exists' }}
+          </div>
         </div>
 
         <div class="field">
@@ -96,9 +82,7 @@
             name="country" 
             class="inp" 
             formControlName="country"
-            [ngClass]="{ 'is-invalid': submitted && f['country'].errors }"
           >
-            <option value="">{{ currentLanguage === 'ar' ? 'اختر الدولة' : 'Choose Country' }}</option>
             <option value="SA">السعودية</option>
             <option value="AE">الإمارات العربية المتحدة</option>
             <option value="KW">الكويت</option>
@@ -112,11 +96,6 @@
             <option value="TN">تونس</option>
             <option value="DZ">الجزائر</option>
           </select>
-          @if (submitted && f['country'].errors) {
-            <div class="error">
-              {{ currentLanguage === 'ar' ? 'الدولة مطلوبة' : 'Country is required' }}
-            </div>
-          }
         </div>
       </div>
 
@@ -131,17 +110,11 @@
             type="tel" 
             formControlName="phone"
             [placeholder]="currentLanguage === 'ar' ? '+9665XXXXXXXX' : '+9665XXXXXXXX'" 
-            autocomplete="tel" 
-            [ngClass]="{ 'is-invalid': submitted && f['phone'].errors }"
+            autocomplete="tel"
           />
           <div class="helper-text">
             {{ currentLanguage === 'ar' ? 'أدخل رقم هاتف صالح بصيغة دولية.' : 'Enter a valid phone number in international format.' }}
           </div>
-          @if (submitted && f['phone'].errors) {
-            <div class="error">
-              {{ currentLanguage === 'ar' ? 'رقم الهاتف مطلوب' : 'Phone number is required' }}
-            </div>
-          }
         </div>
 
         <div class="field">
@@ -153,17 +126,21 @@
             type="text" 
             formControlName="username"
             [placeholder]="currentLanguage === 'ar' ? 'أدخل اسم المستخدم' : 'Enter username'" 
-            autocomplete="username" 
-            [ngClass]="{ 'is-invalid': submitted && f['username'].errors }"
+            autocomplete="username"
           />
           <div class="helper-text">
             {{ currentLanguage === 'ar' ? '٤-٣٠ حرفاً، بدون مسافات.' : '4-30 characters, no spaces.' }}
           </div>
-          @if (submitted && f['username'].errors) {
-            <div class="error">
-              {{ currentLanguage === 'ar' ? 'اسم المستخدم مطلوب' : 'Username is required' }}
-            </div>
-          }
+
+          <div class="error" *ngIf="submitted && f['username'].errors?.['required']">
+            {{ currentLanguage === 'ar' ? 'اسم المستخدم مطلوب' : 'Username is required' }}
+          </div>
+          <div class="error" *ngIf="f['username'].errors?.['pattern'] || f['username'].errors?.['minlength'] || f['username'].errors?.['maxlength']">
+            {{ currentLanguage === 'ar' ? '٤–٣٠ حرفاً بدون مسافات' : '4–30 chars, no spaces' }}
+          </div>
+          <div class="warn" *ngIf="f['username'].errors?.['duplicate']">
+            {{ currentLanguage === 'ar' ? 'اسم المستخدم موجود بالفعل' : 'Username already exists' }}
+          </div>
         </div>
       </div>
 

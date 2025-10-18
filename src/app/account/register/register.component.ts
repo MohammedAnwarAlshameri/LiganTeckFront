@@ -42,7 +42,6 @@ export class RegisterComponent implements OnInit {
 
     // بناء النموذج
     this.signupForm = this.formBuilder.group({
-      fullName: ['', [Validators.required, Validators.minLength(2)]],
       companyName: ['', [Validators.required, Validators.minLength(2)]],
       email: ['', [Validators.required, Validators.email]],
       phone: ['', [Validators.required, Validators.pattern(/^\+[1-9]\d{1,14}$/)]],
@@ -67,29 +66,68 @@ export class RegisterComponent implements OnInit {
     if (this.signupForm.invalid) return;
 
     const formData = this.signupForm.value;
-    const registerData = {
+    const registerData: any = {
       tenantName: formData.companyName,
       email: formData.email,
       password: formData.password,
-      countryCode: formData.country,
-      fullName: formData.fullName,
-      phoneNumber: formData.phone,
-      username: formData.username
+      //phoneNumber: formData.phone,
+      //username: formData.username,
+      countryCode: formData.country || 'SA'
     };
+
+    // إضافة الحقول الاختيارية فقط إذا كانت موجودة
+    if (formData.phone && formData.phone.trim()) {
+      registerData.phoneNumber = formData.phone.trim();
+    }
+    if (formData.username && formData.username.trim()) {
+      registerData.username = formData.username.trim();
+    }
 
     this.loading = true;
 
     this.auth.register(registerData).subscribe({
       next: _ => {
         this.loading = false;
-        // التوكن محفوظ داخل الخدمة؛ نوجّه المستخدم
         this.router.navigateByUrl('/');
       },
       error: err => {
         this.loading = false;
+      
+        // صفّر أخطاء duplicate القديمة
+        ['email','username','companyName'].forEach(k => {
+          const c = this.f[k];
+          if (!c) return;
+          const errors = { ...(c.errors || {}) };
+          delete errors['duplicate'];
+          Object.keys(errors).length ? c.setErrors(errors) : c.setErrors(null);
+        });
+      
+        // 409 = تعارض (تكرار)
+        if (err?.status === 409) {
+          const field = (err?.error?.field || '').toString();
+          const msg = (err?.error?.message || '').toString();
+      
+          // لو السيرفر رجّع field محدد، استخدمه مباشرة
+          if (field && this.f[field]) {
+            this.f[field].setErrors({ ...(this.f[field].errors || {}), duplicate: true });
+          } else {
+            // fallback: استدلّ من الرسالة لو ما فيه field
+            const raw = msg.toLowerCase();
+            if (raw.includes('username')) this.f['username']?.setErrors({ ...(this.f['username']?.errors || {}), duplicate: true });
+            else if (raw.includes('tenant name') || raw.includes('company name')) this.f['companyName']?.setErrors({ ...(this.f['companyName']?.errors || {}), duplicate: true });
+            else if (raw.includes('email')) this.f['email']?.setErrors({ ...(this.f['email']?.errors || {}), duplicate: true });
+          }
+      
+          // لا تعرض رسالة عامة كبيرة؛ خلّي الرسالة تحت الحقل
+          this.error = '';
+          return;
+        }
+      
+        // أخطاء أخرى (500, 400, …)
         this.error = err?.error?.message || err?.message || 'Registration failed';
-      }
+      }      
     });
+    
   }
 
   /**
@@ -121,9 +159,6 @@ export class RegisterComponent implements OnInit {
     return null;
   }
 
-  /**
-   * الذهاب إلى صفحة تسجيل الدخول
-   */
   goToLogin() {
     this.router.navigateByUrl('/auth/login');
   }
