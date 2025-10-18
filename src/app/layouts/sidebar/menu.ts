@@ -18,5 +18,19 @@ export const MENU: MenuItem[] = [
         label: 'MENUITEMS.APPS.LIST.SUBSCRIPTIONS',
         icon: 'ph-credit-card',
         link: '/apps/subscription'
+    },
+    {
+        id: 4,
+        label: 'MENUITEMS.APPS.LIST.TICKETS-ADMIN',
+        icon: 'ph-ticket',
+        link: '/apps/ticket-admin'
+    },
+    {
+        id: 5,
+        label: 'MENUITEMS.APPS.LIST.TICKETS_USER',
+        icon: 'ph-ticket',
+        link: '/apps/ticket-user'
     }
+    
+
 ]

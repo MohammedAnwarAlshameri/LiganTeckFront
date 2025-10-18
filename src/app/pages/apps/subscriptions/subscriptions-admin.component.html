@@ -1,0 +1,152 @@
+<!-- src/app/pages/apps/subscriptions/subscriptions-admin.component.html -->
+
+<!-- Start Breadcrumbs -->
+<app-breadcrumbs title="الاشتراكات - إدارة" [breadcrumbItems]="breadCrumbItems"></app-breadcrumbs>
+<!-- End Breadcrumbs -->
+
+<div class="row">
+  <div class="col-lg-12">
+    <div class="card">
+      <div class="card-header">
+        <h4 class="card-title mb-0">إدارة الاشتراكات</h4>
+      </div>
+
+      <div class="card-body">
+        <div id="subscriptionList">
+
+          <div class="row g-4 mb-3">
+            <div class="col-sm-auto">
+              <div class="d-flex gap-2">
+                <select class="form-select" [(ngModel)]="selectedStatus" (change)="onStatusFilterChange()">
+                  <option value="all">كل الحالات</option>
+                  <option value="1">نشط</option>
+                  <option value="2">منتهي</option>
+                  <option value="3">ملغى</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="col-sm">
+              <div class="d-flex justify-content-sm-end">
+                <div class="search-box ms-2">
+                  <input
+                    type="text"
+                    class="form-control search"
+                    placeholder="بحث برقم الاشتراك أو العميل..."
+                    [(ngModel)]="q"
+                    (keyup.enter)="doSearch()">
+                  <i class="ri-search-line search-icon"></i>
+                </div>
+                <button class="btn btn-primary ms-2" (click)="doSearch()">
+                  <i class="ri-search-line"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="table-responsive table-card mt-3 mb-1">
+            <table class="table align-middle table-nowrap">
+              <thead class="table-light">
+                <tr>
+                  <th scope="col" style="width: 50px;">
+                    <div class="form-check">
+                      <input class="form-check-input" type="checkbox" id="checkAll" 
+                             [(ngModel)]="masterSelected" (change)="checkUncheckAll($event)">
+                    </div>
+                  </th>
+                  <th>رقم الاشتراك</th>
+                  <th>العميل</th>
+                  <th>الخطة</th>
+                  <th>عدد الأشهر</th>
+                  <th>تجديد تلقائي</th>
+                  <th>تاريخ البدء</th>
+                  <th>تاريخ الانتهاء</th>
+                  <th>الأيام المتبقية</th>
+                  <th>الحالة</th>
+                  <th>إجراءات</th>
+                </tr>
+              </thead>
+
+              <tbody class="list form-check-all">
+                <tr *ngIf="loading">
+                  <td colspan="11" class="text-center">جاري التحميل...</td>
+                </tr>
+
+                <tr *ngFor="let sub of paginatedData; trackBy: trackById">
+                  <th scope="row">
+                    <div class="form-check">
+                      <input class="form-check-input" type="checkbox" 
+                             [(ngModel)]="sub.state" (change)="syncChecked()">
+                    </div>
+                  </th>
+                  <td>{{ sub.subscriptionId }}</td>
+                  <td>
+                    <span *ngIf="sub.tenantName">{{ sub.tenantName }}</span>
+                    <small class="text-muted" *ngIf="sub.tenantName"> (#{{ sub.tenantId }})</small>
+                    <span *ngIf="!sub.tenantName">{{ sub.tenantId }}</span>
+                  </td>
+                  <td>
+                    <span *ngIf="sub.planName">{{ sub.planName }}</span>
+                    <small class="text-muted" *ngIf="sub.planName"> (#{{ sub.planId }})</small>
+                    <span *ngIf="!sub.planName">{{ sub.planId }}</span>
+                  </td>
+                  <td>{{ sub.monthsCount }}</td>
+                  <td>
+                    <span class="badge" [ngClass]="sub.autoRenew ? 'bg-success-subtle text-success' : 'bg-secondary-subtle text-secondary'">
+                      {{ sub.autoRenew ? 'نعم' : 'لا' }}
+                    </span>
+                  </td>
+                  <td>{{ formatDate(sub.startDateUtc) }}</td>
+                  <td>{{ formatDate(sub.endDateUtc) }}</td>
+                  <td>
+                    <span *ngIf="sub.endDateUtc" 
+                          [ngClass]="getDaysRemaining(sub.endDateUtc) < 0 ? 'text-danger' : 'text-success'">
+                      {{ getDaysRemaining(sub.endDateUtc) }} يوم
+                    </span>
+                  </td>
+                  <td>
+                    <span class="badge text-uppercase"
+                          [ngClass]="{
+                            'bg-success-subtle text-success': sub.statusColor === 'success',
+                            'bg-danger-subtle text-danger': sub.statusColor === 'danger',
+                            'bg-secondary-subtle text-secondary': sub.statusColor === 'secondary'
+                          }">
+                      {{ sub.statusName }}
+                    </span>
+                  </td>
+                  <td>
+                    <button class="btn btn-sm btn-primary" 
+                            (click)="renewSubscription(sub.subscriptionId)"
+                            title="تجديد الاشتراك">
+                      <i class="ri-refresh-line"></i>
+                    </button>
+                  </td>
+                </tr>
+
+                <tr *ngIf="!loading && paginatedData.length === 0">
+                  <td colspan="11" class="text-center text-muted">
+                    <i class="ri-inbox-line fs-1"></i>
+                    <p class="mt-2 mb-0">لا توجد اشتراكات</p>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="d-flex justify-content-end">
+            <div class="pagination-wrap hstack gap-2">
+              <pagination
+                [totalItems]="total"
+                [itemsPerPage]="pageSize"
+                [maxSize]="5"
+                [(ngModel)]="page">
+              </pagination>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+

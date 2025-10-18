@@ -1,91 +1,156 @@
 // src/app/pages/services/subscription.service.ts
-import { Injectable, inject } from '@angular/core';
+
+import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable, map } from 'rxjs';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
-import { SubscriptionApiItem, SubscriptionRow, PagedResult, CreateSubscriptionRequest } from 'src/app/pages/apps/subscription/subscription.model';
+import { SubscriptionDto, CreateSubscriptionRequest, SubscriptionStatus, SubscriptionListItemDto, PagedResult } from '../apps/subscriptions/subscription.model';
+import { SubscriptionRow } from '../apps/subscription/subscription.model';
 
-@Injectable({ providedIn: 'root' })
+@Injectable({
+  providedIn: 'root'
+})
 export class SubscriptionService {
-  private http = inject(HttpClient);
-  private base = environment.apiBaseUrl; // مثال: http://localhost:7066/api
+  private apiUrl = `${environment.apiBaseUrl}/subscriptions`;
 
-  /**
-   * استرجاع الاشتراكات حسب المستأجر:
-   * GET /api/subscriptions/by-tenant/{tenantId}
-   */
-  getByTenant(tenantId: number): Observable<SubscriptionApiItem[]> {
-    return this.http.get<SubscriptionApiItem[]>(`${this.base}/subscriptions/by-tenant/${tenantId}`);
+  constructor(private http: HttpClient) {}
+
+  // إنشاء اشتراك جديد
+  create(request: CreateSubscriptionRequest): Observable<SubscriptionDto> {
+    return this.http.post<SubscriptionDto>(this.apiUrl, request).pipe(
+      map(sub => this.mapSubscriptionStatus(sub))
+    );
   }
 
-  /**
-   * إنشاء اشتراك جديد:
-   * POST /api/subscriptions
-   */
-  create(request: CreateSubscriptionRequest): Observable<SubscriptionApiItem> {
-    return this.http.post<SubscriptionApiItem>(`${this.base}/subscriptions`, request);
+  // تجديد اشتراك
+  renew(subscriptionId: number): Observable<any> {
+    return this.http.post(`${this.apiUrl}/${subscriptionId}/renew`, {});
   }
 
-  /**
-   * تجديد اشتراك:
-   * POST /api/subscriptions/{id}/renew
-   */
-  renew(id: number): Observable<any> {
-    return this.http.post(`${this.base}/subscriptions/${id}/renew`, {});
+  // الحصول على اشتراكات tenant معين
+  getByTenant(tenantId: number): Observable<SubscriptionDto[]> {
+    return this.http.get<SubscriptionDto[]>(`${this.apiUrl}/by-tenant/${tenantId}`).pipe(
+      map(subs => subs.map(sub => this.mapSubscriptionStatus(sub)))
+    );
   }
 
-  // تحويل عنصر API إلى صيغة الجدول الحالية
-  apiToRow(api: SubscriptionApiItem, tenantName: string = 'Unknown Tenant', planName: string = 'Unknown Plan'): SubscriptionRow {
-    const startDate = api.startDateUtc ? new Date(api.startDateUtc) : null;
-    const endDate = api.endDateUtc ? new Date(api.endDateUtc) : null;
-    
-    const startDateStr = startDate
-      ? startDate.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })
-      : '';
-    
-    const endDateStr = endDate
-      ? endDate.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })
-      : '';
+  // ========== للأدمن ==========
+  
+  // الحصول على جميع الاشتراكات (للأدمن)
+  adminGetAll(): Observable<PagedResult<SubscriptionListItemDto>> {
+    return this.http.get<PagedResult<SubscriptionListItemDto>>(`${this.apiUrl}/admin/all`).pipe(
+      map(result => ({
+        ...result,
+        items: result.items.map(sub => this.mapSubscriptionListItemStatus(sub))
+      }))
+    );
+  }
 
-    const status = this.getStatusName(api.subStatusid);
-    const statusColor = this.getStatusColor(api.subStatusid);
+  // البحث المتقدم (للأدمن)
+  adminSearch(
+    tenantId?: number | null,
+    planId?: number | null,
+    statusId?: number | null,
+    fromUtc?: string | null,
+    toUtc?: string | null,
+    page: number = 1,
+    pageSize: number = 20
+  ): Observable<PagedResult<SubscriptionListItemDto>> {
+    let params = new HttpParams()
+      .set('page', page.toString())
+      .set('pageSize', pageSize.toString());
 
-    const amount = api.invoice?.amountTotal || 0;
-    const currency = api.invoice?.currencyCode || 'SAR';
+    if (tenantId) params = params.set('tenantId', tenantId.toString());
+    if (planId) params = params.set('planId', planId.toString());
+    if (statusId) params = params.set('statusId', statusId.toString());
+    if (fromUtc) params = params.set('fromUtc', fromUtc);
+    if (toUtc) params = params.set('toUtc', toUtc);
 
+    return this.http.get<PagedResult<SubscriptionListItemDto>>(`${this.apiUrl}/admin/search`, { params }).pipe(
+      map(result => ({
+        ...result,
+        items: result.items.map(sub => this.mapSubscriptionListItemStatus(sub))
+      }))
+    );
+  }
+
+  // Helper لتحويل من DTO إلى Row للعرض في الجدول القديم
+  apiToRow(dto: SubscriptionDto, tenantName: string, planName: string): SubscriptionRow {
     return {
-      id: api.subscriptionId,
+      id: dto.subscriptionId,
       tenant_name: tenantName,
       plan_name: planName,
-      months_count: api.monthsCount,
-      auto_renew: api.autoRenew,
-      status: status,
-      status_color: statusColor,
-      start_date: startDateStr,
-      end_date: endDateStr,
-      amount: amount,
-      currency: currency,
+      months_count: dto.monthsCount,
+      auto_renew: dto.autoRenew,
+      status: dto.statusName || this.getStatusName(dto.subStatusid),
+      status_color: dto.statusColor || this.getStatusColor(dto.subStatusid),
+      start_date: new Date(dto.startDateUtc).toLocaleDateString('ar-SA'),
+      end_date: dto.endDateUtc ? new Date(dto.endDateUtc).toLocaleDateString('ar-SA') : '-',
+      amount: dto.invoice?.amountTotal || 0,
+      currency: dto.invoice?.currencyCode || 'SAR',
       state: false
     };
   }
 
+  // Helper لتحويل status id إلى اسم ولون
+  private mapSubscriptionStatus(subscription: SubscriptionDto): SubscriptionDto {
+    switch (subscription.subStatusid) {
+      case SubscriptionStatus.Active:
+        subscription.statusName = 'نشط';
+        subscription.statusColor = 'success';
+        break;
+      case SubscriptionStatus.Expired:
+        subscription.statusName = 'منتهي';
+        subscription.statusColor = 'danger';
+        break;
+      case SubscriptionStatus.Cancelled:
+        subscription.statusName = 'ملغى';
+        subscription.statusColor = 'secondary';
+        break;
+      default:
+        subscription.statusName = 'غير معروف';
+        subscription.statusColor = 'secondary';
+    }
+    return subscription;
+  }
+
   private getStatusName(statusId: number): string {
     switch (statusId) {
-      case 1: return 'Active';
-      case 2: return 'Expired';
-      case 3: return 'Cancelled';
-      case 4: return 'Suspended';
-      default: return 'Unknown';
+      case SubscriptionStatus.Active: return 'نشط';
+      case SubscriptionStatus.Expired: return 'منتهي';
+      case SubscriptionStatus.Cancelled: return 'ملغى';
+      default: return 'غير معروف';
     }
   }
 
   private getStatusColor(statusId: number): string {
     switch (statusId) {
-      case 1: return 'success';    // Active
-      case 2: return 'danger';     // Expired
-      case 3: return 'secondary';  // Cancelled
-      case 4: return 'warning';    // Suspended
+      case SubscriptionStatus.Active: return 'success';
+      case SubscriptionStatus.Expired: return 'danger';
+      case SubscriptionStatus.Cancelled: return 'secondary';
       default: return 'secondary';
     }
+  }
+
+  private mapSubscriptionListItemStatus(subscription: SubscriptionListItemDto): SubscriptionListItemDto {
+    switch (subscription.subStatusid) {
+      case SubscriptionStatus.Active:
+        subscription.statusName = 'نشط';
+        subscription.statusColor = 'success';
+        break;
+      case SubscriptionStatus.Expired:
+        subscription.statusName = 'منتهي';
+        subscription.statusColor = 'danger';
+        break;
+      case SubscriptionStatus.Cancelled:
+        subscription.statusName = 'ملغى';
+        subscription.statusColor = 'secondary';
+        break;
+      default:
+        subscription.statusName = 'غير معروف';
+        subscription.statusColor = 'secondary';
+    }
+    return subscription;
   }
 }
