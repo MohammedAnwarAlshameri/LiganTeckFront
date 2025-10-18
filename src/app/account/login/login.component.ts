@@ -1,14 +1,15 @@
-import { Component } from '@angular/core';
+import { Component, HostListener, OnInit } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthenticationService } from 'src/app/core/services/auth.service';
+import { LanguageService } from 'src/app/core/services/language.service';
 
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss']
 })
-export class LoginComponent {
+export class LoginComponent implements OnInit {
 
   loginForm!: UntypedFormGroup;
   submitted = false;
@@ -16,6 +17,8 @@ export class LoginComponent {
   error = '';
   returnUrl = '/';
   loading = false;
+  isLanguageMenuOpen = false;
+  currentLanguage = 'ar';
 
   year: number = new Date().getFullYear();
 
@@ -23,7 +26,8 @@ export class LoginComponent {
     private formBuilder: UntypedFormBuilder,
     private router: Router,
     private route: ActivatedRoute,
-    private auth: AuthenticationService
+    private auth: AuthenticationService,
+    private languageService: LanguageService
   ) {}
 
   ngOnInit(): void {
@@ -34,9 +38,14 @@ export class LoginComponent {
       return;
     }
 
+    // تهيئة اللغة
+    this.currentLanguage = this.languageService.getCurrentLanguage();
+    this.setDocumentLanguage();
+
     this.loginForm = this.formBuilder.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required]],
+      remember: [false]
     });
   }
 
@@ -69,5 +78,31 @@ export class LoginComponent {
 
   toggleFieldTextType() {
     this.fieldTextType = !this.fieldTextType;
+  }
+
+  // Language switching methods
+  toggleLanguageMenu() {
+    this.isLanguageMenuOpen = !this.isLanguageMenuOpen;
+  }
+
+  changeLanguage(lang: string) {
+    this.currentLanguage = lang;
+    this.languageService.setLanguage(lang);
+    this.setDocumentLanguage();
+    this.isLanguageMenuOpen = false;
+  }
+
+  private setDocumentLanguage() {
+    document.documentElement.lang = this.currentLanguage;
+    document.documentElement.dir = this.currentLanguage === 'ar' ? 'rtl' : 'ltr';
+  }
+
+  // Close language menu when clicking outside
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: Event) {
+    const target = event.target as HTMLElement;
+    if (!target.closest('.langbar')) {
+      this.isLanguageMenuOpen = false;
+    }
   }
 }
