@@ -1,0 +1,287 @@
+<!-- src/app/pages/apps/ticket-user/ticket-user.component.html -->
+
+<!-- Start Breadcrumbs -->
+<app-breadcrumbs title="طلب دعم" [breadcrumbItems]="breadCrumbItems"></app-breadcrumbs>
+<!-- End Breadcrumbs -->
+
+<div class="row">
+  <div class="col-lg-12">
+    <!-- إنشاء تذكرة جديدة -->
+    <div class="card mb-4">
+      <div class="card-header">
+        <h4 class="card-title mb-0">
+          <i class="ri-add-square-line me-2"></i>
+          إنشاء تذكرة جديدة
+        </h4>
+      </div>
+      <div class="card-body">
+        <form [formGroup]="ticketForm" (ngSubmit)="createTicket()">
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="subjectLine" class="form-label">عنوان المشكلة <span class="text-danger">*</span></label>
+              <input type="text" class="form-control" id="subjectLine" formControlName="subjectLine" 
+                     [class.is-invalid]="submitted && ticketForm.get('subjectLine')?.errors"
+                     placeholder="مثال: مشكلة في تسجيل الدخول">
+              <div class="invalid-feedback" *ngIf="submitted && ticketForm.get('subjectLine')?.errors">
+                <div *ngIf="ticketForm.get('subjectLine')?.errors?.['required']">عنوان المشكلة مطلوب</div>
+                <div *ngIf="ticketForm.get('subjectLine')?.errors?.['minlength']">يجب أن يكون العنوان 5 أحرف على الأقل</div>
+              </div>
+            </div>
+
+            <div class="col-md-6 mb-3">
+              <label for="priorityLevel" class="form-label">الأولوية <span class="text-danger">*</span></label>
+              <select class="form-select" id="priorityLevel" formControlName="priorityLevel">
+                <option value="low">منخفضة</option>
+                <option value="medium">متوسطة</option>
+                <option value="high">عالية</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label for="bodyText" class="form-label">وصف المشكلة <span class="text-danger">*</span></label>
+            <textarea class="form-control" id="bodyText" formControlName="bodyText" rows="4" 
+                      [class.is-invalid]="submitted && ticketForm.get('bodyText')?.errors"
+                      placeholder="اشرح لنا المشكلة بالتفصيل، وخطوات إعادة إنتاجها إن أمكن"></textarea>
+            <div class="invalid-feedback" *ngIf="submitted && ticketForm.get('bodyText')?.errors">
+              <div *ngIf="ticketForm.get('bodyText')?.errors?.['required']">وصف المشكلة مطلوب</div>
+              <div *ngIf="ticketForm.get('bodyText')?.errors?.['minlength']">يجب أن يكون الوصف 10 أحرف على الأقل</div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="attachment" class="form-label">مرفقات (اختياري)</label>
+              <input type="file" class="form-control" id="attachment" multiple>
+            </div>
+          </div>
+
+          <div class="d-flex gap-2 justify-content-end">
+            <button type="reset" class="btn btn-outline-secondary">
+              <i class="ri-refresh-line me-1"></i> مسح
+            </button>
+            <button type="submit" class="btn btn-primary">
+              <i class="ri-send-plane-line me-1"></i> إرسال التذكرة
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- تذاكري -->
+    <div class="card">
+      <div class="card-header">
+        <div class="d-flex justify-content-between align-items-center w-100">
+          <h4 class="card-title mb-0">
+            <i class="ri-ticket-line me-2"></i>
+            تذاكري
+          </h4>
+          <div class="d-flex gap-2 align-items-center">
+            <input type="text" class="form-control form-control-sm" style="width: 250px;" 
+                   placeholder="ابحث بعنوان المشكلة..." 
+                   [(ngModel)]="q" (keyup.enter)="doSearch()">
+            <select class="form-select form-select-sm" style="width: 150px;" 
+                    [(ngModel)]="priorityFilter" (change)="doSearch()">
+              <option *ngFor="let priority of priorities" [value]="priority.value">{{ priority.label }}</option>
+            </select>
+            <button class="btn btn-sm btn-outline-secondary" (click)="clearFilters()">
+              <i class="ri-refresh-line"></i>
+            </button>
+            <button class="btn btn-sm btn-primary" (click)="doSearch()">
+              <i class="ri-search-line"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="table-responsive">
+          <table class="table table-hover align-middle">
+            <colgroup>
+              <col style="width: 72px;" />
+              <col />
+              <col style="width: 110px;" />
+              <col style="width: 120px;" />
+              <col style="width: 140px;" />
+              <col style="width: 84px;" />
+            </colgroup>
+            <thead class="table-light">
+              <tr>
+                <th>#</th>
+                <th>العنوان</th>
+                <th>الأولوية</th>
+                <th>الحالة</th>
+                <th>أُنشئت في</th>
+                <th>المرفقات</th>
+                <th>إجراءات</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngIf="loading">
+                <td colspan="7" class="text-center">
+                  <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">جاري التحميل...</span>
+                  </div>
+                </td>
+              </tr>
+              
+              <tr *ngFor="let ticket of ticketsData; trackBy: trackById">
+                <td>{{ ticket.id }}</td>
+                <td class="subject">
+                  <div class="text-truncate" [title]="ticket.subject" style="max-width: 400px;">
+                    {{ ticket.subject }}
+                  </div>
+                </td>
+                <td>
+                  <span class="badge" 
+                        [ngClass]="{
+                          'bg-success-subtle text-success': ticket.priority_color === 'success',
+                          'bg-warning-subtle text-warning': ticket.priority_color === 'warning',
+                          'bg-danger-subtle text-danger': ticket.priority_color === 'danger'
+                        }">
+                    <i class="ri-signal-tower-line me-1"></i>{{ ticket.priority }}
+                  </span>
+                </td>
+                <td>
+                  <span class="badge" 
+                        [ngClass]="{
+                          'bg-info-subtle text-info': ticket.status_color === 'info',
+                          'bg-warning-subtle text-warning': ticket.status_color === 'warning',
+                          'bg-success-subtle text-success': ticket.status_color === 'success'
+                        }">
+                    <i class="ri-circle-fill me-1"></i>{{ ticket.status }}
+                  </span>
+                </td>
+                <td>{{ ticket.created_date }}</td>
+                <td class="text-center">
+                  <span *ngIf="ticket.attachmentPath" class="badge bg-info-subtle text-info">
+                    <i class="ri-attachment-line me-1"></i>
+                    مرفق
+                  </span>
+                  <span *ngIf="!ticket.attachmentPath" class="text-muted">
+                    <i class="ri-file-line"></i>
+                    لا يوجد
+                  </span>
+                </td>
+                <td>
+                  <button class="btn btn-sm btn-outline-primary" (click)="viewTicket(ticket)">
+                    <i class="ri-eye-line"></i> عرض
+                  </button>
+                </td>
+              </tr>
+
+              <tr *ngIf="!loading && ticketsData.length === 0">
+                <td colspan="7" class="text-center text-muted py-5">
+                  <i class="ri-inbox-line fs-1 d-block mb-2"></i>
+                  <p class="mb-0">لا توجد نتائج</p>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Pagination -->
+        <div class="d-flex justify-content-end mt-3" *ngIf="total > pageSize">
+          <pagination
+            [totalItems]="total"
+            [itemsPerPage]="pageSize"
+            [maxSize]="5"
+            [(ngModel)]="page"
+            (pageChanged)="tablepageChanged($event)">
+          </pagination>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- تفاصيل التذكرة والمحادثة -->
+<div class="card mt-4" *ngIf="selectedTicket" id="ticketDetailsCard">
+  <div class="card-header">
+    <div class="d-flex justify-content-between align-items-center">
+      <h5 class="card-title mb-0">
+        <i class="ri-comment-dots-line me-2"></i>
+        تفاصيل التذكرة #{{ selectedTicket.ticket.id }} — {{ selectedTicket.ticket.subject }}
+      </h5>
+      <button type="button" class="btn-close" (click)="closeDetails()"></button>
+    </div>
+  </div>
+  <div class="card-body">
+    <!-- معلومات التذكرة -->
+    <div class="row mb-4">
+      <div class="col-md-8">
+        <h6>{{ selectedTicket.ticket.subject }}</h6>
+        <p class="text-muted mb-2">أُنشئت في: {{ selectedTicket.ticket.created_date }}</p>
+        <p class="text-muted" *ngIf="selectedTicket.ticket.bodyText">
+          {{ selectedTicket.ticket.bodyText }}
+        </p>
+        
+        <!-- Attachment -->
+        <div class="mt-3" *ngIf="selectedTicket.ticket.attachmentPath">
+          <label class="form-label text-muted small">المرفق:</label>
+          <div class="d-flex align-items-center gap-2">
+            <i class="ri-attachment-line text-info"></i>
+            <a [href]="getAttachmentUrl(selectedTicket.ticket.attachmentPath)" 
+               target="_blank" 
+               class="text-decoration-none">
+              <span class="badge bg-info-subtle text-info">
+                <i class="ri-download-line me-1"></i>
+                تحميل المرفق
+              </span>
+            </a>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4 text-end">
+        <div class="d-flex gap-2 justify-content-end flex-wrap">
+          <span class="badge" 
+                [ngClass]="{
+                  'bg-success-subtle text-success': selectedTicket.ticket.priority_color === 'success',
+                  'bg-warning-subtle text-warning': selectedTicket.ticket.priority_color === 'warning',
+                  'bg-danger-subtle text-danger': selectedTicket.ticket.priority_color === 'danger'
+                }">
+            <i class="ri-signal-tower-line me-1"></i>{{ selectedTicket.ticket.priority }}
+          </span>
+          <span class="badge" 
+                [ngClass]="{
+                  'bg-info-subtle text-info': selectedTicket.ticket.status_color === 'info',
+                  'bg-warning-subtle text-warning': selectedTicket.ticket.status_color === 'warning',
+                  'bg-success-subtle text-success': selectedTicket.ticket.status_color === 'success'
+                }">
+            <i class="ri-circle-fill me-1"></i>{{ selectedTicket.ticket.status }}
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- المحادثة -->
+    <div class="chat-wrapper">
+      <div class="chat-feed" #chatFeed>
+        <div *ngFor="let chat of ticketChats" class="mb-3">
+          <div class="d-flex" [ngClass]="chat.isAdmin ? 'justify-content-end' : 'justify-content-start'">
+            <div class="msg" 
+                 [ngClass]="chat.isAdmin ? 'admin' : 'tenant'">
+              <p class="mb-1">{{ chat.message }}</p>
+              <small class="meta">{{ chat.timestamp }}</small>
+            </div>
+          </div>
+        </div>
+
+        <div *ngIf="ticketChats.length === 0" class="text-center text-muted py-4">
+          <i class="ri-chat-3-line fs-1"></i>
+          <p class="mb-0 mt-2">لا توجد رسائل حتى الآن</p>
+        </div>
+      </div>
+
+      <!-- إضافة رد -->
+      <div class="chat-input">
+        <input type="text" class="form-control" 
+               placeholder="اكتب رسالتك..." 
+               [(ngModel)]="replyMessage"
+               (keyup.enter)="addReply()">
+        <button class="btn btn-primary" type="button" (click)="addReply()">
+          <i class="ri-send-plane-line"></i> إرسال
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
