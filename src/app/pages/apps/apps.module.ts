@@ -53,6 +53,9 @@ import { FlatpickrModule } from 'angularx-flatpickr';
 
 import { ClientComponent } from './client/client.component';
 import { SubscriptionComponent } from './subscription/subscription.component';
+import { TicketComponent } from './ticket/ticket.component';
+import { TicketAdminComponent } from './ticket-admin/ticket-admin.component';
+import { TicketUserComponent } from './ticket-user/ticket-user.component';
 
 const DEFAULT_DROPZONE_CONFIG: DropzoneConfigInterface = {
   // Change this to your upload POST address:
@@ -66,6 +69,9 @@ const DEFAULT_DROPZONE_CONFIG: DropzoneConfigInterface = {
   declarations: [
    ClientComponent,
    SubscriptionComponent,
+   TicketComponent,
+   TicketAdminComponent,
+   TicketUserComponent,
   ],
   imports: [
     CommonModule,
